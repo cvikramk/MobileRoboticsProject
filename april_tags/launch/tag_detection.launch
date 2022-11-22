@@ -1,3 +1,3 @@
 <launch>
-  <node name = "Tag_detect" pkg = "april_tags" type = "tag_detection.py" output="screen"/> 
+  <node name = "Tag_detect" pkg = "april_tags" type = "tag_detections.py" output="screen"/> 
 </launch>
