@@ -15,13 +15,13 @@ class TagDetection:
     def __init__(self):
 
         self.bridge = CvBridge()
-        self.image_sub = rospy.Subscriber("/camera/image_raw", Image, self.callback)
+        self.image_sub = rospy.Subscriber("/camera/image", Image, self.callback)
         self.tf_broadcaster = tf.TransformBroadcaster()
 
     def callback(self, data):
         image = self.bridge.imgmsg_to_cv2(data, "bgr8")
-        image = cv2.rotate(image,cv2.ROTATE_90_CLOCKWISE)
-        image = cv2.rotate(image,cv2.ROTATE_90_CLOCKWISE)
+        # image = cv2.rotate(image,cv2.ROTATE_90_CLOCKWISE)
+        # image = cv2.rotate(image,cv2.ROTATE_90_CLOCKWISE)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         options = apriltag.DetectorOptions(families="tag36h11")
         detector = apriltag.Detector(options)
@@ -32,12 +32,15 @@ class TagDetection:
             pose, e0, e1 = detector.detection_pose(i, camera_params=(499.11014636, 498.6075723, 316.14098243, 247.3739291), tag_size=0.171)
             # Draw the bounding box
             cv2.rectangle(image, (int(i.corners[0][0]), int(i.corners[0][1])),(int(i.corners[2][0]),int(i.corners[2][1])), (255, 255, 0), 10)
+
+            # publish the detect image to the topic /camera/image_detected
+            self.image_pub = rospy.Publisher("/camera/image_detected", Image, queue_size=10)
             # Get roll pitch yaw from rotation matrix
             r = tf.transformations.euler_from_matrix(pose)
             # print shape of the transformation matrix
-            print(pose.shape)
-            print(r)
-            print(pose)
+            # print(pose.shape)
+            # print(r)
+            # print(pose)
             # Broadcast the transform
             dist_from_leo = pose[2][3]*100
             cv2.putText(image, "Distance from Leo: " + str(dist_from_leo), (int(i.corners[0][0]), int(i.corners[0][1]-20)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
@@ -49,9 +52,9 @@ class TagDetection:
             q = quaternion_from_euler(roll, pitch, yaw)
             # Publish the transformation
             self.tf_broadcaster.sendTransform(pose[0:3, 3], q, data.header.stamp, "tag_" + str(i.tag_id), "map")
-        cv2.imshow("Image window", image)
-        #close window if q is pressed
-        cv2.waitKey(1)
+        # cv2.imshow("Image window", image)
+        # #close window if q is pressed
+        # cv2.waitKey(1)
 
 
 

@@ -1,4 +1,3 @@
 <launch>
-  <node name = "Tag_detect" pkg = "april_tags" type = "tag_detections.py" output="screen"/> 
   <node name = "Estimate_Pose" pkg = "april_tags" type = "TagGlobalPoseEstimator.py" output="screen"/> 
 </launch>
