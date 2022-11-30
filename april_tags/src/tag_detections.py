@@ -66,9 +66,7 @@ class TagDetection:
                 pose_t = pose[0:3, 3]
                 #project 3d points to 2d
                 ProjectedPose = np.empty((3))
-                ProjectedPose[0] = pose_t[2]
-                ProjectedPose[1] = pose_t[0]
-                ProjectedPose[2] = 0
+                ProjectedPose = [pose_t[2], -pose_t[0], 0]
 
                 # print("pose", pose, "\n", "pose_t", pose_t)
                 print("ProjectedPose", pose_t)
@@ -108,8 +106,7 @@ class TagDetection:
                 
                 HomogeneousPose = np.append(ProjectedPose, 1)
                 #print("HomogeneousPose", HomogeneousPose)
-                pose_prime = np.matmul(SE3ForOdom, pose)
-                pose_prime_final = np.empty((3))
+                pose_prime = np.dot(SE3ForOdom, HomogeneousPose)
                 # pose_prime_final[0] = -pose_prime[2][3] / pose_prime[1][3]
                 # pose_prime_final[1] = pose_prime[0][3] / -pose_prime[1][3]
                 # pose_prime_final[2] = 0.0
@@ -121,8 +118,8 @@ class TagDetection:
                 # pitch = np.arctan2(-r[2, 0], np.sqrt(r[2, 1] ** 2 + r[2, 2] ** 2))
                 # yaw = np.arctan2(r[1, 0], r[0, 0])
                 # Convert to quaternion
-                # q = quaternion_from_euler(0, 0, 0)
-                # self.tf_broadcaster.sendTransform(pose_prime[0:3,3], q, data.header.stamp, "tag1_" + str(i.tag_id), "map")
+                q = quaternion_from_euler(0, 0, 0)
+                self.tf_broadcaster.sendTransform(pose_prime[0:3], q, data.header.stamp, "tag1_" + str(i.tag_id), "map")
             #cv2.imshow("Image window", image)
             # #close window if q is pressed
             #cv2.waitKey(1)
