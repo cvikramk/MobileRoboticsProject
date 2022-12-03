@@ -1,4 +1,5 @@
 <launch>
+  <!-- node name = "calibrated_image" pkg = "april_tags" type = "calibrated_image.py" output="screen"/ -->
   <node name = "Tag_detect" pkg = "april_tags" type = "tag_detections.py" output="screen"/> 
-  <!-- node name = "Estimate_Pose" pkg = "april_tags" type = "TagGlobalPoseEstimator.py" output="screen"/ -->
+  <!--node name = "TagMapping" pkg = "april_tags" type = "mapTags.py" output="screen"/-->
 </launch>
