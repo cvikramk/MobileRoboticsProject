@@ -109,15 +109,13 @@ def projection(r, t, laser_data, image, K):
 if __name__=="__main__":
     image = cv2.imread("images/image_0.jpg")
     image = cv2.rotate(image, cv2.ROTATE_180)
-    laser_scan = np.loadtxt("images/laser_scan_0.txt")
+    laser_scan = np.loadtxt("images/scan_0.txt")
+    print(laser_scan)
+    print(laser_scan.shape)
     rotation = np.eye(3)
     translation = np.array([0.08,-0.005, -0.06])
     theta = np.arange(0.0, 6.2657318115234375, 0.01745329238474369)
-    data = np.empty((1,3))
-    for i in range(225, 315, 1):
-        data = np.vstack((data, [laser_scan[i]*10*np.cos(theta[i]), laser_scan[i]*10*np.sin(theta[i]), 0]))
-    data = np.delete(data, 0, axis=0)
     K = np.array([[499.11014636/4, 0, 316.14098243, 0],[0, 498.6075723/3, 247.3739291, 0],[0,0,1, 0]])
-    projection(rotation, translation, data, image, K)
+    projection(rotation, translation, laser_scan, image, K)
 
 # generate the data in x,y,z and feed it to the projection function, plot in the image to see the laser points

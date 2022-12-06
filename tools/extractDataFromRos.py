@@ -8,6 +8,16 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import time
+from laser_geometry import LaserProjection
+# convert PointCloud2 to PointCloud
+from sensor_msgs.msg import PointCloud2, PointCloud
+from sensor_msgs import point_cloud2
+#from sensor_msgs import ConvertPointCloud2ToPointCloud
+# plot 3d point cloud
+from mpl_toolkits.mplot3d import Axes3D
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
 
 # create a folder to save the images
 if not os.path.exists('images'):
@@ -32,7 +42,7 @@ for timestamp in image_timestamps:
     min_time_diff_index = 0
     for index, (topic, msg, t) in enumerate(bag.read_messages(topics=['/scan'])):
         if topic == '/scan':
-            print(msg)
+            #print(msg)
             time_diff = abs(t.to_sec() - timestamp)
             if time_diff < min_time_diff:
                 min_time_diff = time_diff
@@ -40,8 +50,24 @@ for timestamp in image_timestamps:
 
     for index, (topic, msg, t) in enumerate(bag.read_messages(topics=['/scan'])):
         if index == min_time_diff_index:
-            np.savetxt('images/laser_scan_%s.txt' % str(image_timestamps.index(timestamp)), msg.ranges)
-    
+            # convert laser scan to point cloud
+            lp = LaserProjection()
+            pc = lp.projectLaser(msg)
+            # covert PointCloud2 to PointCloud
+            pc = point_cloud2.read_points(pc, skip_nans=True, field_names=("x", "y", "z"))
+            pcArray = np.array(list(pc))
+            # plot the point cloud
+            ax.scatter(pcArray[:,0], pcArray[:,1], pcArray[:,2], marker='o')
+            ax.set_xlabel('X Label')
+            ax.set_ylabel('Y Label')
+            ax.set_zlabel('Z Label')
+            # print the pc as numpy array
+            # save point cloud to text file
+            np.savetxt('images/scan_%s.txt' % str(image_timestamps.index(timestamp)), pcArray)
+            #np.savetxt('images/laser_scan_%s.txt' % str(image_timestamps.index(timestamp)), msg.ranges)
+
+plt.show()
+
 
 # close the rosbag file
 bag.close()
