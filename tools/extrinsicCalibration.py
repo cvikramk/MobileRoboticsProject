@@ -92,12 +92,17 @@ import rosbag
 # project the points in laser to the camera frame using this transformation and plot those transformed points on the camera image data to visualise the laser points in the camera image
 # we have to change the laser_data from r,theta to x,y
 def projection(r, t, laser_data, image, K):
-    for i in range(len(laser_data)):
-        points = r@(laser_data[i] - t)
-        print(points)
-        points = K@points
-        print(points)
-        image = cv2.circle(image, (int(points[0]), int(points[1])), radius=0, color=(0,0,255), thickness=3)
+    for i in laser_data:
+        print(i)
+        ReorderedLaserData = np.array([i[1], i[2], i[0]])
+        points = r@(ReorderedLaserData - t)
+        #print(points)
+        points = np.append(points, 1)
+        Projpoints = K@points
+        u = Projpoints[0]/Projpoints[2]
+        v = Projpoints[1]/Projpoints[2]
+        print(Projpoints)
+        image = cv2.circle(image, (int(u), int(v)), radius=1, color=(0,0,255), thickness=2)
     cv2.imshow('image', image)
     cv2.waitKey(0)
 
@@ -106,13 +111,13 @@ if __name__=="__main__":
     image = cv2.rotate(image, cv2.ROTATE_180)
     laser_scan = np.loadtxt("images/laser_scan_0.txt")
     rotation = np.eye(3)
-    translation = np.array([0.08,0.005, 0.06])
+    translation = np.array([0.08,-0.005, -0.06])
     theta = np.arange(0.0, 6.2657318115234375, 0.01745329238474369)
     data = np.empty((1,3))
-    for i in range(270, 315, 1):
-        data = np.vstack((data, [laser_scan[i]*np.cos(theta[i]), laser_scan[i]*np.sin(theta[i]), 0]))
+    for i in range(225, 315, 1):
+        data = np.vstack((data, [laser_scan[i]*10*np.cos(theta[i]), laser_scan[i]*10*np.sin(theta[i]), 0]))
     data = np.delete(data, 0, axis=0)
-    K = np.array([[499.11014636, 0, 316.14098243],[0, 498.6075723, 247.3739291],[0,0,0]])
+    K = np.array([[499.11014636/4, 0, 316.14098243, 0],[0, 498.6075723/3, 247.3739291, 0],[0,0,1, 0]])
     projection(rotation, translation, data, image, K)
 
 # generate the data in x,y,z and feed it to the projection function, plot in the image to see the laser points
