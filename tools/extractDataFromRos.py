@@ -24,7 +24,7 @@ if not os.path.exists('images'):
     os.makedirs('images')
 
 # open the rosbag file
-bag = rosbag.Bag('2022-12-03-18-08-20.bag')
+bag = rosbag.Bag('/home/anuj/Ext_calib/2022-12-06-20-44-20.bag')
 
 # read 50 random images from the rosbag file and store their timestamps
 image_timestamps = []
@@ -50,8 +50,15 @@ for timestamp in image_timestamps:
 
     for index, (topic, msg, t) in enumerate(bag.read_messages(topics=['/scan'])):
         if index == min_time_diff_index:
+            # new_msg = msg.ranges
+            # for i in range(25, len(msg.ranges)-25):
+            #     new_msg.ranges[i] = 0
+
+            # print(new_msg)
+            # ada
             # convert laser scan to point cloud
             lp = LaserProjection()
+            
             pc = lp.projectLaser(msg)
             # covert PointCloud2 to PointCloud
             pc = point_cloud2.read_points(pc, skip_nans=True, field_names=("x", "y", "z"))
@@ -64,8 +71,7 @@ for timestamp in image_timestamps:
             # print the pc as numpy array
             # save point cloud to text file
             np.savetxt('images/scan_%s.txt' % str(image_timestamps.index(timestamp)), pcArray)
-            #np.savetxt('images/laser_scan_%s.txt' % str(image_timestamps.index(timestamp)), msg.ranges)
-
+            np.savetxt('images/laser_scan_%s.txt' % str(image_timestamps.index(timestamp)), msg)
 plt.show()
 
 
