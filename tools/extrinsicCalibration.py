@@ -116,8 +116,14 @@ if __name__=="__main__":
     # print(laser_scan.shape)
     rotation = np.eye(3)
     translation = np.array([0.08,-0.005, -0.06])
-    theta = np.arange(0.0, 6.2657318115234375, 0.01745329238474369)
     K = np.array([[499.11014636/4, 0, 316.14098243, 0],[0, 498.6075723/3, 247.3739291, 0],[0,0,1, 0]])
-    projection(rotation, translation, laser_scan, image, K)
+    new_laser_scan = np.empty((1,3))
+    for i in range(len(laser_scan)):
+        if(laser_scan[i][1] in range(-1.0, 1.0) and laser_scan[i][0] in range(1.3, 2.0)):
+            np.vstack((new_laser_scan, [laser_scan[i]]))
+    projection(rotation, translation, new_laser_scan, image, K)
+    
+    # theta = np.arange(0.0, 6.2657318115234375, 0.01745329238474369)
+    
 
 # generate the data in x,y,z and feed it to the projection function, plot in the image to see the laser points
