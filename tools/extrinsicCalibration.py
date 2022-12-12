@@ -96,8 +96,10 @@ def projection(r, t, laser_data, image, K):
     for i in laser_data:
         print(i)
         ReorderedLaserData = np.array([i[1], i[2], i[0]])
-        points = r@(ReorderedLaserData - t)
+        points = r@(ReorderedLaserData + t)
         #print(points)
+        # converting points in R3 to S2
+        points = points/np.linalg.norm(points)
         points = np.append(points, 1)
         Projpoints = K@points
         u = Projpoints[0]/Projpoints[2]
@@ -111,7 +113,7 @@ if __name__=="__main__":
     image = cv2.imread("images/image_0.jpg")
     image = cv2.rotate(image, cv2.ROTATE_180)
     laser_scan = np.loadtxt("images/scan_0.txt")
-    print("input laser scan",laser_scan)
+    #print("input laser scan",laser_scan)
     rotation = np.eye(3)
     translation = np.array([0.08,-0.005, -0.06])
     K = np.array([[499.11014636/4, 0, 316.14098243, 0],[0, 498.6075723/3, 247.3739291, 0],[0,0,1, 0]])
