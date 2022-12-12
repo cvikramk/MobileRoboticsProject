@@ -1,6 +1,7 @@
 #! /bin/env python
 # Code to publish map from laser scan 
 # Creator: Aryaman Patel
+# Run this with static publisher : rosrun tf static_transform_publisher 0 0 0 0 0 0 1 map map_laser 10
 
 import rospy
 from nav_msgs.msg import OccupancyGrid
@@ -32,7 +33,7 @@ class Mapping:
         self.pub = rospy.Publisher('map_laser',OccupancyGrid,queue_size=10)
         self.subscriber = rospy.Subscriber('/scan',LaserScan, self.laser_callback)
         
-
+    
     def get_line(self, x1, y1, x2, y2):
         points = []
         issteep = abs(y2-y1) > abs(x2-x1)
