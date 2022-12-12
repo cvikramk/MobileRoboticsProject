@@ -60,12 +60,19 @@ def callback(data):
     center = (int((position[1]-data.info.origin.position.y)/resolution),int((position[0]-data.info.origin.position.x)/resolution))
     print(center)
     print(data.info.origin.position)
-    mask = sector_mask(new_map.shape,center,cam_dist/resolution,(-30,30))
+    #mask = sector_mask(new_map.shape,center,cam_dist/resolution,(-30,30))
     # print(np.unique(mask))
     map_center = (int(10/resolution),int(10/resolution))
     print(map_center)
-    # new_map[map_center]=200
-    new_map[mask]=200
+
+    # new_map[map_center]=200]
+    t = robot_pose.getLatestCommonTime("odom", "base_footprint")
+    position, quatern = robot_pose.lookupTransform("odom", "base_footprint", t)
+    map_x = position[0]
+    map_y = position[1]
+    grid_x = (map_x - data.info.origin.position.x)/(data.info.resolution)
+    grid_y = (map_y - data.info.origin.position.y)/(data.info.resolution)
+    new_map[int(grid_x),int(grid_y)]=200
     # new_map[np.where(slam_map)==100]=100
     # print(new_map.ravel().)
     # new_msg = OccupancyGrid(data.header,data.info,new_map.flatten().astype(np.int8).tolist())
