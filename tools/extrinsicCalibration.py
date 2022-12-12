@@ -92,6 +92,7 @@ import rosbag
 # project the points in laser to the camera frame using this transformation and plot those transformed points on the camera image data to visualise the laser points in the camera image
 # we have to change the laser_data from r,theta to x,y
 def projection(r, t, laser_data, image, K):
+    #image = cv2.rotate(image, cv2.ROTATE_180)
     for i in laser_data:
         print(i)
         ReorderedLaserData = np.array([i[1], i[2], i[0]])
@@ -110,13 +111,19 @@ if __name__=="__main__":
     image = cv2.imread("images/image_0.jpg")
     image = cv2.rotate(image, cv2.ROTATE_180)
     laser_scan = np.loadtxt("images/scan_0.txt")
+    print("input laser scan",laser_scan)
     rotation = np.eye(3)
     translation = np.array([0.08,-0.005, -0.06])
     K = np.array([[499.11014636/4, 0, 316.14098243, 0],[0, 498.6075723/3, 247.3739291, 0],[0,0,1, 0]])
     new_laser_scan = np.empty((1,3))
-    for i in range(len(laser_scan)):
-        if(laser_scan[i][1] in range(-1.0, 1.0) and laser_scan[i][0] in range(1.3, 2.0)):
-            np.vstack((new_laser_scan, [laser_scan[i]]))
+    for i in laser_scan:
+        print("each laser scan",i)
+        print("each laser scan y and x",i[1],i[0])
+        if((i[1] > -3.0 and i[1] < 3.0)):
+            if((i[0] > 1.3) and (i[0] < 2.0)):
+                new_laser_scan = np.vstack((new_laser_scan, [i]))
+
+    print("new laser scan",new_laser_scan)
     projection(rotation, translation, new_laser_scan, image, K)
     
     # theta = np.arange(0.0, 6.2657318115234375, 0.01745329238474369)

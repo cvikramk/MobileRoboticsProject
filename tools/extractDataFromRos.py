@@ -24,7 +24,7 @@ if not os.path.exists('images'):
     os.makedirs('images')
 
 # open the rosbag file
-bag = rosbag.Bag('/home/anuj/Ext_calib/2022-12-06-20-44-20.bag')
+bag = rosbag.Bag('2022-12-06-20-44-20.bag')
 
 # read 50 random images from the rosbag file and store their timestamps
 image_timestamps = []
@@ -71,7 +71,7 @@ for timestamp in image_timestamps:
             # print the pc as numpy array
             # save point cloud to text file
             np.savetxt('images/scan_%s.txt' % str(image_timestamps.index(timestamp)), pcArray)
-            np.savetxt('images/laser_scan_%s.txt' % str(image_timestamps.index(timestamp)), msg)
+            #np.savetxt('images/laser_scan_%s.txt' % str(image_timestamps.index(timestamp)), msg)
 plt.show()
 
 
