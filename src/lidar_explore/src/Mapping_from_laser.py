@@ -92,8 +92,8 @@ class Mapping:
                 if ranges[i] == float('inf'):
                     continue
                 else:
-                    x_laser = int((x + ranges[i]*cos(theta + i*data.angle_increment) - self.map_laser.info.origin.position.x)/self.map_laser.info.resolution)
-                    y_laser = int((y + ranges[i]*sin(theta + i*data.angle_increment) - self.map_laser.info.origin.position.y)/self.map_laser.info.resolution)
+                    x_laser = int((x + (ranges[i]*3/4)*cos(theta + i*data.angle_increment) - self.map_laser.info.origin.position.x)/self.map_laser.info.resolution)
+                    y_laser = int((y + (ranges[i]*3/4)*sin(theta + i*data.angle_increment) - self.map_laser.info.origin.position.y)/self.map_laser.info.resolution)
                     # Set the free cells in the map 
                     free_points = self.get_line(x_map,y_map,x_laser,y_laser)
                     for point in free_points:
