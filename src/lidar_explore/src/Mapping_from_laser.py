@@ -89,17 +89,25 @@ class Mapping:
         for i in range(len(ranges)):
             if (i*data.angle_increment + theta) < np.deg2rad(30) or (i*data.angle_increment + theta) > np.deg2rad(330):
                 # Get the x and y position of the laser scan data in the map
-                if ranges[i] == float('inf'):
+                if ranges[i] == 0.0:
                     continue
                 else:
-                    x_laser = int((x + (ranges[i]*3/4)*cos(theta + i*data.angle_increment) - self.map_laser.info.origin.position.x)/self.map_laser.info.resolution)
-                    y_laser = int((y + (ranges[i]*3/4)*sin(theta + i*data.angle_increment) - self.map_laser.info.origin.position.y)/self.map_laser.info.resolution)
-                    # Set the free cells in the map 
-                    free_points = self.get_line(x_map,y_map,x_laser,y_laser)
-                    for point in free_points:
-                        self.laser_arr[point[0]][point[1]] = 0
+                    if ranges[i] > 2:
+                        x_laser = int((x + 2*cos(theta + i*data.angle_increment) - self.map_laser.info.origin.position.x)/self.map_laser.info.resolution)
+                        y_laser = int((y + 2*sin(theta + i*data.angle_increment) - self.map_laser.info.origin.position.y)/self.map_laser.info.resolution)
+                        # Set the free cells in the map 
+                        free_points = self.get_line(x_map,y_map,x_laser,y_laser)
+                        for point in free_points:
+                            self.laser_arr[point[0]][point[1]] = 0
                     # Set the occupied cells in the map
-                    self.laser_arr[x_laser][y_laser] = 100
+                    elif (ranges[i] < 2):
+                        x_laser = int((x + ranges[i]*cos(theta + i*data.angle_increment) - self.map_laser.info.origin.position.x)/self.map_laser.info.resolution)
+                        y_laser = int((y + ranges[i]*sin(theta + i*data.angle_increment) - self.map_laser.info.origin.position.y)/self.map_laser.info.resolution)
+                        free_points = self.get_line(x_map,y_map,x_laser,y_laser)
+                        for point in free_points:
+                            self.laser_arr[point[0]][point[1]] = 0
+                        self.laser_arr[x_laser][y_laser] = 100
+                    #self.laser_arr[x_laser][y_laser] = 100
             else:
                 continue
 
