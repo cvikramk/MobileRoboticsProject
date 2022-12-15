@@ -89,11 +89,11 @@ class Mapping:
         for i in range(len(ranges)):
             if (i*data.angle_increment + theta) < np.deg2rad(30) or (i*data.angle_increment + theta) > np.deg2rad(330):
                 # Get the x and y position of the laser scan data in the map
-                if ranges[i] == float('inf'):
+                if ranges[i] == 0.0:
                     continue
                 else:
-                    x_laser = int((x + ranges[i]*cos(theta + i*data.angle_increment) - self.map_laser.info.origin.position.x)/self.map_laser.info.resolution)
-                    y_laser = int((y + ranges[i]*sin(theta + i*data.angle_increment) - self.map_laser.info.origin.position.y)/self.map_laser.info.resolution)
+                    x_laser = int((x + (ranges[i]*3/4)*cos(theta + i*data.angle_increment) - self.map_laser.info.origin.position.x)/self.map_laser.info.resolution)
+                    y_laser = int((y + (ranges[i]*3/4)*sin(theta + i*data.angle_increment) - self.map_laser.info.origin.position.y)/self.map_laser.info.resolution)
                     # Set the free cells in the map 
                     free_points = self.get_line(x_map,y_map,x_laser,y_laser)
                     for point in free_points:
@@ -114,6 +114,7 @@ class Mapping:
         self.map_update.data = self.map_update.data.astype(np.int8)
         # Publish the map
         self.pub.publish(self.map_update)
+        rospy.loginfo("Map Published")
                 
     def listner(self):
         rospy.spin()
